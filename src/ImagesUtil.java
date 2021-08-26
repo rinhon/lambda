@@ -41,21 +41,29 @@ public class ImagesUtil {
         String baseUrl = "https://www.tupianzj.com";
         Connection connect = Jsoup.connect(baseUrl+"/meinv/meizitu/");
         Document document = connect.get();
-
+        /**
+         * 获取本栏目所有妹子套图节点
+         */
         Elements elements = document.body().getElementsByClass("d1").select("li");
         for (Element img : elements) {
             Runnable task = () -> {
                 try {
-
+                    /**
+                     * 获取套图地址
+                     */
                     String href = img.child(0).attr("href");
                     Connection subConnect = Jsoup.connect(baseUrl+href)
                             . header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:49.0) Gecko/20100101 Firefox/49.0")
                             .timeout(8000);
                     Document subDocument = subConnect.get();
-
+                    /**
+                     * 获取套图标题用于创建目录
+                     */
                     String title = subDocument.body().getElementsByTag("h1").eq(1).html();
                     System.out.println("开始下载："+title);
-
+                    /**
+                     * 获取套图图片数量
+                     */
                     String txt =  subDocument.body().getElementsByClass("pages").select("li").eq(0).html();
                     Matcher m = p.matcher(txt);
                     if(StringUtils.isNoneBlank(m.replaceAll("").trim())){
@@ -69,8 +77,10 @@ public class ImagesUtil {
                             subConnect = Jsoup.connect(url);
                             subDocument = subConnect.get();
                             String src = Objects.requireNonNull(subDocument.getElementById("bigpicimg")).attr("src");
-
-                            HttpUtil.downloadFile(src, FileUtil.mkdir("e:/图/"+title+"/"));
+                            /**
+                             * 下载妹子
+                             */
+                            HttpUtil.downloadFile(src, FileUtil.mkdir("e:/妹子图/"+title+"/"));
                         }
                     }
                 } catch (IOException e) {
